@@ -137,7 +137,6 @@ private:
     QList<int> m_seqIdPool;  ///< @brief the set of seq ids
     QList<int> m_seqIdSample;  ///< @brief the sample set of seq ids
     QString m_classname;
-    QList<QString> m_sids;
-    QList<QString> m_names;
+    QList<QString> m_items;
     QString m_txtLucky;
 };

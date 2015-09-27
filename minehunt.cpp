@@ -43,7 +43,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QFileDialog>
-#include <QtXml/QDomDocument>
+#include <QTextStream>
 #include <boost/numeric/conversion/converter.hpp>
 
 #include "minehunt.h"
@@ -128,7 +128,7 @@ void MinehuntGame::reset()
         t->unflip();
         t->setHasFlag(false);
     }
-    nMines = m_sids.size();
+    nMines = m_items.size();
     nFlags = 0;
     emit numFlagsChanged();
     setPlaying(false);
@@ -225,23 +225,20 @@ bool MinehuntGame::flag(int row, int col)
 void MinehuntGame::parserClassRoom()
 {
     QString classfilename = QFileDialog::getOpenFileName(NULL,
-	    tr("Select the pool file"), QString(), "XML files (*.xml)");
+	    tr("Select the pool file"), QString(), "text files (*.txt)");
     if (classfilename.isNull())
-	classfilename = "SampleClassroom.xml";
+	classfilename = "SampleClassroom.txt";
+    m_classname = classfilename;
     QFile* classfile = new QFile(classfilename, this);
-    QDomDocument classdocument;
-    if (classdocument.setContent(classfile))
+    if (classfile->open(QIODevice::ReadOnly | QIODevice::Text))
     {
-	QDomElement theelem = classdocument.documentElement();
-	m_classname = theelem.attribute("name");
-        QDomNodeList memlistelm = classdocument.elementsByTagName("member");
-	int i;
-        for (i = 0; i < memlistelm.count(); i++)
+        QTextStream classstream(classfile);
+	int i = 0;
+        QString line;
+        while (!classstream.atEnd())
         {
-	    theelem = memlistelm.item(i).toElement();
-	    m_sids.append(theelem.attribute("id"));
-	    m_names.append(theelem.text());
-            m_seqIdPool.append(i);
+	    m_items.append(classstream.readLine());
+            m_seqIdPool.append(i++);
         }
     }
     delete classfile;
@@ -256,8 +253,7 @@ void MinehuntGame::popOne()
     theone = HZround::convert((m_seqIdPool.size() - 1.) * qrand() / RAND_MAX);
     if (theone < m_seqIdPool.size())
     {
-        m_txtLucky = m_sids.at(m_seqIdPool.at(theone))
-            + m_names.at(m_seqIdPool.at(theone));
+        m_txtLucky = m_items.at(m_seqIdPool.at(theone));
         emit txtLuckyChanged();
     }
     if (m_seqIdPool.size() > 0)
