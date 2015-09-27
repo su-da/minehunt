@@ -68,7 +68,7 @@ QDeclarativeListProperty<TileData> MinehuntGame::tiles(){
 }
 
 MinehuntGame::MinehuntGame()
-: numCols(9), numRows(9), playing(true), won(false)
+: numCols(24), numRows(15), playing(true), won(false)
 {
     setObjectName("mainObject");
     srand(QTime(0,0,0).secsTo(QTime::currentTime()));

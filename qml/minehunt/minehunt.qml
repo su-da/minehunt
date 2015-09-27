@@ -47,13 +47,13 @@ Item {
     property int clickx: 0
     property int clicky: 0
 
-    width: 450; height: 450
+    width: 1000; height: 750
 
     Image { source: "MinehuntCore/pics/background.png"; anchors.fill: parent; fillMode: Image.Tile }
 
     Grid {
         anchors.horizontalCenter: parent.horizontalCenter
-        columns: 9; spacing: 1
+        columns: 24; spacing: 1
 
         Repeater {
             id: repeater

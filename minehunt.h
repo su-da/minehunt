@@ -114,7 +114,7 @@ signals:
 
 private:
     bool onBoard( int r, int c ) const { return r >= 0 && r < numRows && c >= 0 && c < numCols; }
-    TileData *tile( int row, int col ) { return onBoard(row, col) ? _tiles[col+numRows*row] : 0; }
+    TileData *tile( int row, int col ) { return onBoard(row, col) ? _tiles[col+numCols*row] : 0; }
     int getHint(int row, int col);
     void setPlaying(bool b){if(b==playing) return; playing=b; emit isPlayingChanged();}
 

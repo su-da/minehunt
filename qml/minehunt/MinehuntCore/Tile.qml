@@ -109,8 +109,8 @@ Flipable {
         onClicked: {
             field.clickx = flipable.x
             field.clicky = flipable.y
-            var row = Math.floor(index / 9)
-            var col = index - (Math.floor(index / 9) * 9)
+            var row = Math.floor(index / 24)
+            var col = index - (Math.floor(index / 24) * 24)
             if (mouse.button == undefined || mouse.button == Qt.RightButton) {
                 flag(row, col)
             } else {
@@ -120,8 +120,8 @@ Flipable {
         onPressAndHold: {
             field.clickx = flipable.x
             field.clicky = flipable.y
-            var row = Math.floor(index / 9)
-            var col = index - (Math.floor(index / 9) * 9)
+            var row = Math.floor(index / 24)
+            var col = index - (Math.floor(index / 24) * 24)
             flag(row, col)
         }
     }
