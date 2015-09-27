@@ -51,7 +51,89 @@ Item {
 
     Image { source: "MinehuntCore/pics/background.png"; anchors.fill: parent; fillMode: Image.Tile }
 
+    Flipable {
+        id: imode
+        property int angle: 0
+        width: 64;  height: 64
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.top: parent.top
+        anchors.topMargin: 8
+
+        property bool flipped: false
+
+        transform: Rotation { origin.x: 32; origin.y: 32; axis.x: 1; axis.z: 0; angle: imode.angle }
+
+        front: Image {
+            source: "MinehuntCore/pics/face-smile-big.png"
+            width: 64; height: 64
+        }
+
+        back: Image {
+            source: "MinehuntCore/pics/face-sad.png"
+            width: 64; height: 64
+        }
+
+        states: State {
+            name: "back"; when: imode.flipped
+            PropertyChanges { target: imode; angle: 180 }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                imode.flipped = !imode.flipped
+            }
+        }
+    }
+
+    Text {
+        id: txtMine
+        width: 800
+        height: 64
+        color: "#f7f40e"
+        text: txtLucky
+        font.family: "Arial Unicode MS"
+        anchors.left: parent.left
+        anchors.leftMargin: 80
+        anchors.top: parent.top
+        anchors.topMargin: 4
+        font.pointSize: 48
+        verticalAlignment: "AlignVCenter"
+        MouseArea {
+            id: aboutregion; anchors.fill: parent;
+            onClicked: toolbar.toggle()
+        }
+    }
+
+    Text {
+        id: toolbar
+        color: "gray"
+        x: 150; y: 4;
+        width: 640; height: 64
+        opacity: 0
+        font.bold: true
+        font.pointSize: 16
+        text: "Copyright (C) 2015. Wenfeng CAI (ee at i dot iee dot io).\nCopyright (C) 2013. Digia Plc."
+        property bool on: false
+        function toggle() {
+            toolbar.on = !toolbar.on
+        }
+        states : State {
+            name: "shown"
+            when: toolbar.on
+            PropertyChanges{target:toolbar; y: 700; opacity: 1}
+        }
+        transitions: [
+            Transition {
+                NumberAnimation { properties: "y,opacity"; duration: 500 }
+            }
+        ]
+    }
+
     Grid {
+        anchors.top: parent.top
+        anchors.topMargin: 72
         anchors.horizontalCenter: parent.horizontalCenter
         columns: 24; spacing: 1
 
@@ -104,7 +186,7 @@ Item {
         anchors.centerIn: parent; width: parent.width - 20
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
-        text: "Minehunt demo has to be compiled to run.\n\nPlease see README."
+        text: "Minehunt has to be compiled to run.\n\nPlease see README."
         color: "white"; font.bold: true; font.pixelSize: 14
         visible: tiles == undefined
     }

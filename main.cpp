@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     viewer.engine()->rootContext()->setContextObject(game);
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockLandscape);
     viewer.setMainQmlFile(QLatin1String("qml/minehunt/minehunt.qml"));
-    viewer.showExpanded();
+    viewer.showFullScreen();
 
     return app.exec();
 }

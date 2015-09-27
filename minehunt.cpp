@@ -42,6 +42,9 @@
 #include <stdlib.h>
 #include <QTime>
 #include <QTimer>
+#include <QFileDialog>
+#include <QtXml/QDomDocument>
+#include <boost/numeric/conversion/converter.hpp>
 
 #include "minehunt.h"
 
@@ -68,10 +71,14 @@ QDeclarativeListProperty<TileData> MinehuntGame::tiles(){
 }
 
 MinehuntGame::MinehuntGame()
-: numCols(24), numRows(15), playing(true), won(false)
+: numCols(24), numRows(15), playing(true), won(false),
+    m_txtLucky("0000000000 Some One")
 {
     setObjectName("mainObject");
     srand(QTime(0,0,0).secsTo(QTime::currentTime()));
+
+    qsrand(QDateTime::currentDateTime().toTime_t());
+    parserClassRoom();
 
     //initialize array
     for(int ii = 0; ii < numRows * numCols; ++ii) {
@@ -121,12 +128,15 @@ void MinehuntGame::reset()
         t->unflip();
         t->setHasFlag(false);
     }
-    nMines = 12;
+    nMines = m_sids.size();
     nFlags = 0;
-    emit numMinesChanged();
     emit numFlagsChanged();
     setPlaying(false);
     QTimer::singleShot(600,this, SLOT(setBoard()));
+
+    m_seqIdPool.append(m_seqIdSample);
+    m_seqIdSample.clear();
+    emit numMinesChanged();
 }
 
 int MinehuntGame::getHint(int row, int col)
@@ -159,6 +169,8 @@ bool MinehuntGame::flip(int row, int col)
                     continue;
                 if(nearT->hasFlag())
                     flags++;
+                if(nearT->flipped() && nearT->hasMine())
+                    flags++;
             }
         if(!t->hint() || t->hint() != flags)
             return false;
@@ -185,16 +197,7 @@ bool MinehuntGame::flip(int row, int col)
     }
 
     if(t->hasMine()){
-        for (int r = 0; r < numRows; r++)//Flip all other mines
-            for (int c = 0; c < numCols; c++) {
-                TileData* t = tile(r, c);
-                if (t && t->hasMine()) {
-                    flip(r, c);
-                }
-            }
-        won = false;
-        hasWonChanged();
-        setPlaying(false);
+        popOne();
         return true;
     }
 
@@ -202,8 +205,7 @@ bool MinehuntGame::flip(int row, int col)
     if(!remaining){
         won = true;
         hasWonChanged();
-        setPlaying(false);
-        return true;
+        // setPlaying(false);
     }
     return true;
 }
@@ -218,4 +220,50 @@ bool MinehuntGame::flag(int row, int col)
     nFlags += (t->hasFlag()?1:-1);
     emit numFlagsChanged();
     return true;
+}
+
+void MinehuntGame::parserClassRoom()
+{
+    QString classfilename = QFileDialog::getOpenFileName(NULL,
+	    tr("Select the pool file"), QString(), "XML files (*.xml)");
+    if (classfilename.isNull())
+	classfilename = "SampleClassroom.xml";
+    QFile* classfile = new QFile(classfilename, this);
+    QDomDocument classdocument;
+    if (classdocument.setContent(classfile))
+    {
+	QDomElement theelem = classdocument.documentElement();
+	m_classname = theelem.attribute("name");
+        QDomNodeList memlistelm = classdocument.elementsByTagName("member");
+	int i;
+        for (i = 0; i < memlistelm.count(); i++)
+        {
+	    theelem = memlistelm.item(i).toElement();
+	    m_sids.append(theelem.attribute("id"));
+	    m_names.append(theelem.text());
+            m_seqIdPool.append(i);
+        }
+    }
+    delete classfile;
+}
+
+void MinehuntGame::popOne()
+{
+    using namespace boost::numeric;
+    typedef converter< int,double,conversion_traits<int,double>,
+            def_overflow_handler, RoundEven<double> > HZround;
+    int theone;
+    theone = HZround::convert((m_seqIdPool.size() - 1.) * qrand() / RAND_MAX);
+    if (theone < m_seqIdPool.size())
+    {
+        m_txtLucky = m_sids.at(m_seqIdPool.at(theone))
+            + m_names.at(m_seqIdPool.at(theone));
+        emit txtLuckyChanged();
+    }
+    if (m_seqIdPool.size() > 0)
+    {
+	m_seqIdSample.append(m_seqIdPool.at(theone));
+	m_seqIdPool.removeAt(theone);
+        emit numMinesChanged();
+    }
 }
