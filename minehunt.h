@@ -40,7 +40,8 @@
 ****************************************************************************/
 
 
-#include <qdeclarative.h>
+#include <QQmlEngine>
+#include <QQmlListProperty>
 
 class TileData : public QObject
 {
@@ -85,8 +86,8 @@ class MinehuntGame : public QObject
 public:
     MinehuntGame();
 
-    Q_PROPERTY(QDeclarativeListProperty<TileData> tiles READ tiles CONSTANT)
-    QDeclarativeListProperty<TileData> tiles();
+    Q_PROPERTY(QQmlListProperty<TileData> tiles READ tiles CONSTANT)
+    QQmlListProperty<TileData> tiles();
 
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY isPlayingChanged)
     bool isPlaying() {return playing;}

@@ -39,25 +39,33 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.0
-import Qt.labs.particles 1.0
+import QtQuick 2.3
+import QtQuick.Particles 2.0
 
 Item {
     property bool explode : false
 
-    Particles {
+    ParticleSystem {
+        id: particleSystem
+    }
+    Emitter {
         id: particles
+        emitRate: 0
         width: 40
         height: 40
         lifeSpan: 1000
-        lifeSpanDeviation: 0
+        lifeSpanVariation: 0
+        system: particleSystem
+        velocity: AngleDirection {
+            angle: 270
+            angleVariation: 360
+            magnitude: 100
+            magnitudeVariation: 20
+        }
+    }
+    ImageParticle {
         source: "pics/star.png"
-        count: 0
-        angle: 270
-        angleDeviation: 360
-        velocity: 100
-        velocityDeviation: 20
-        z: 100
+        system: particleSystem
     }
     states: State { name: "exploding"; when: explode
         StateChangeScript {script: particles.burst(200); }

@@ -39,24 +39,23 @@
 **
 ****************************************************************************/
 
-#include "qmlapplicationviewer.h"
 #include "minehunt.h"
 #include <QtWidgets/QApplication>
-#include <QtDeclarative/QDeclarativeContext>
-#include <QtDeclarative/QDeclarativeEngine>
+#include <QQuickView>
+#include <QQmlContext>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    QmlApplicationViewer viewer;
+    QQuickView viewer;
 
     qmlRegisterType<TileData>();
     MinehuntGame* game = new MinehuntGame();
 
-    viewer.engine()->rootContext()->setContextObject(game);
-    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockLandscape);
-    viewer.setMainQmlFile(QLatin1String("qml/minehunt/minehunt.qml"));
-    viewer.showFullScreen();
+    viewer.rootContext()->setContextObject(game);
+    viewer.setSource(QUrl("qrc:/qml/minehunt/minehunt.qml"));
+    QObject::connect(viewer.engine(), SIGNAL(quit()), &app, SLOT(quit()));
+    viewer.showMaximized();
 
     return app.exec();
 }

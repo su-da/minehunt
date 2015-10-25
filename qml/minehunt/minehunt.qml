@@ -39,7 +39,7 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.0
+import QtQuick 2.3
 import "MinehuntCore"
 
 Item {
@@ -48,6 +48,7 @@ Item {
     property int clicky: 0
 
     width: 1000; height: 750
+    anchors.fill: parent
 
     Image { source: "MinehuntCore/pics/background.png"; anchors.fill: parent; fillMode: Image.Tile }
 
@@ -65,12 +66,12 @@ Item {
         transform: Rotation { origin.x: 32; origin.y: 32; axis.x: 1; axis.z: 0; angle: imode.angle }
 
         front: Image {
-            source: "MinehuntCore/pics/face-smile-big.png"
+            source: "MinehuntCore/pics/face-smile.png"
             width: 64; height: 64
         }
 
         back: Image {
-            source: "MinehuntCore/pics/face-sad.png"
+            source: "MinehuntCore/pics/face-smile-big.png"
             width: 64; height: 64
         }
 
